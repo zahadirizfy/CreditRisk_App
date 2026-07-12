@@ -46,7 +46,7 @@ class User(db.Model):
         nullable=False
     )
 
-    institusi = db.Column(
+    instansi = db.Column(
         db.String(40)
     )
 
@@ -79,7 +79,7 @@ class User(db.Model):
             "email": self.email,
             "nomor_telepon": self.nomor_telepon,
             "role": self.role,
-            "institusi": self.institusi,
+            "instansi": self.instansi,
             "status_aktif": self.status_aktif,
             "terakhir_login": self.terakhir_login,
             "created_at": self.created_at,

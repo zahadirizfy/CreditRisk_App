@@ -6,11 +6,12 @@ from datetime import datetime
 from database.db import db
 from models.user import User
 from sqlalchemy import or_
+from decorators.role_required import role_required
 
 
 # ==========================================
 # REGISTER
-# ==========================================
+# =========================================
 def register():
 
     try:
@@ -24,7 +25,7 @@ def register():
         password = data.get("password")
         nama_lengkap = data.get("nama_lengkap")
         nomor_telepon = data.get("nomor_telepon")
-        institusi = data.get("institusi")
+        instansi = data.get("instansi")
         role = data.get("role")
 
         if not username:
@@ -36,16 +37,16 @@ def register():
         if not password:
             return jsonify({"success": False, "message": "Password wajib diisi"}), 400
 
-        allowed_roles = ["nasabah", "admin_bank"]
+        allowed_roles = ["nasabah", "instansi"]
 
         if role not in allowed_roles:
             return jsonify({"success": False, "message": "Role tidak valid"}), 400
 
-        if role == "admin_bank" and not institusi:
+        if role == "instansi" and not instansi:
             return jsonify(
                 {
                     "success": False,
-                    "message": "Institusi wajib diisi untuk Admin Bank/Koperasi",
+                    "message": "Nama instansi wajib diisi",
                 }
             ), 400
 
@@ -61,6 +62,14 @@ def register():
         if existing_email:
             return jsonify({"success": False, "message": "Email sudah digunakan"}), 409
 
+        if nomor_telepon:
+            existing_phone = User.query.filter_by(nomor_telepon=nomor_telepon).first()
+
+        if existing_phone:
+            return jsonify(
+                {"success": False, "message": "Nomor telepon sudah digunakan."}
+            ), 409
+
         hashed_password = generate_password_hash(password).decode("utf-8")
 
         new_user = User(
@@ -69,11 +78,11 @@ def register():
             nama_lengkap=nama_lengkap,
             email=email,
             nomor_telepon=nomor_telepon,
-            institusi=institusi,
+            instansi=instansi,
             role=role,
             status_aktif=True,
-            created_at=datetime.now(),
-            updated_at=datetime.now(),
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
         )
 
         db.session.add(new_user)
@@ -92,10 +101,12 @@ def register():
             }
         ), 201
 
-    except Exception as e:
+    except Exception:
         db.session.rollback()
 
-        return jsonify({"success": False, "message": str(e)}), 500
+        return jsonify(
+            {"success": False, "message": "Terjadi kesalahan pada server."}
+        ), 500
 
 
 # ==========================================
@@ -149,8 +160,8 @@ def login():
 
         access_token = create_access_token(identity=str(user.id_user))
 
-        user.terakhir_login = datetime.now()
-        user.updated_at = datetime.now()
+        user.terakhir_login = datetime.utcnow()
+        user.updated_at = datetime.utcnow()
 
         db.session.commit()
 
@@ -158,18 +169,21 @@ def login():
             {
                 "success": True,
                 "message": "Login berhasil",
-                "token": access_token,
+                "access_token": access_token,
                 "user": {
                     "id_user": user.id_user,
                     "username": user.username,
                     "nama_lengkap": user.nama_lengkap,
                     "email": user.email,
+                    "nomor_telepon": user.nomor_telepon,
+                    "instansi": user.instansi,
                     "role": user.role,
+                    "status_aktif": user.status_aktif,
                 },
             }
         ), 200
 
-    except Exception as e:
+    except Exception:
         db.session.rollback()
 
         return jsonify(
@@ -186,7 +200,7 @@ def profile():
     try:
         user_id = int(get_jwt_identity())
 
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
 
         if not user:
             return jsonify({"success": False, "message": "User tidak ditemukan"}), 404
@@ -208,7 +222,7 @@ def update_profile():
     try:
         user_id = int(get_jwt_identity())
 
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
 
         if not user:
             return jsonify({"success": False, "message": "User tidak ditemukan"}), 404
@@ -238,19 +252,35 @@ def update_profile():
         if existing_email:
             return jsonify({"success": False, "message": "Email sudah digunakan"}), 409
 
+        nomor_telepon = data.get(
+            "nomor_telepon",
+            user.nomor_telepon,
+        )
+
+        if nomor_telepon:
+            existing_phone = User.query.filter(
+                User.nomor_telepon == nomor_telepon,
+                User.id_user != user.id_user,
+            ).first()
+
+        if existing_phone:
+            return jsonify(
+                {"success": False, "message": "Nomor telepon sudah digunakan."}
+            ), 409
+
         user.nama_lengkap = data.get("nama_lengkap", user.nama_lengkap)
 
         user.username = username
 
         user.email = email
 
-        user.nomor_telepon = data.get("nomor_telepon", user.nomor_telepon)
+        user.nomor_telepon = nomor_telepon
 
-        # Hanya selain nasabah yang boleh mengubah institusi
+        # Hanya selain nasabah yang boleh mengubah instansi
         if user.role != "nasabah":
-            user.institusi = data.get("institusi", user.institusi)
+            user.instansi = data.get("instansi", user.instansi)
 
-        user.updated_at = datetime.now()
+        user.updated_at = datetime.utcnow()
 
         db.session.commit()
 
@@ -279,7 +309,7 @@ def change_password():
     try:
         user_id = int(get_jwt_identity())
 
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
 
         if not user:
             return jsonify({"success": False, "message": "User tidak ditemukan"}), 404
@@ -322,7 +352,7 @@ def change_password():
         hashed_password = generate_password_hash(new_password).decode("utf-8")
 
         user.password = hashed_password
-        user.updated_at = datetime.now()
+        user.updated_at = datetime.utcnow()
 
         db.session.commit()
 
@@ -340,19 +370,10 @@ def change_password():
 # GET ALL USERS
 # ==========================================
 @jwt_required()
+@role_required("super_admin", "operator")
 def get_users():
 
     try:
-        current_user_id = int(get_jwt_identity())
-
-        current_user = User.query.get(current_user_id)
-
-        if not current_user:
-            return jsonify({"success": False, "message": "User tidak ditemukan"}), 404
-
-        if current_user.role != "super_admin":
-            return jsonify({"success": False, "message": "Akses ditolak"}), 403
-
         users = User.query.all()
 
         return jsonify(
@@ -371,20 +392,11 @@ def get_users():
 # GET USER BY ID
 # ==========================================
 @jwt_required()
+@role_required("super_admin", "operator")
 def get_user_by_id(id_user):
 
     try:
-        current_user_id = int(get_jwt_identity())
-
-        current_user = User.query.get(current_user_id)
-
-        if not current_user:
-            return jsonify({"success": False, "message": "User tidak ditemukan"}), 404
-
-        if current_user.role != "super_admin":
-            return jsonify({"success": False, "message": "Akses ditolak"}), 403
-
-        user = User.query.get(id_user)
+        user = db.session.get(User, id_user)
 
         if not user:
             return jsonify({"success": False, "message": "User tidak ditemukan"}), 404

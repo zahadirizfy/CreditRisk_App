@@ -1,12 +1,11 @@
 from flask import Blueprint
-from flask_jwt_extended import jwt_required
-from controllers.auth_controller import change_password
 
 from controllers.auth_controller import (
     register,
     login,
     profile,
     update_profile,
+    change_password,
     get_users,
     get_user_by_id,
 )
@@ -35,9 +34,13 @@ def profile_route():
 
 
 @auth_bp.route("/profile", methods=["PUT"])
-@jwt_required()
 def update_profile_route():
     return update_profile()
+
+
+@auth_bp.route("/profile/change-password", methods=["PUT"])
+def change_password_route():
+    return change_password()
 
 
 # ==========================================
@@ -53,14 +56,3 @@ def get_users_route():
 @auth_bp.route("/users/<int:id_user>", methods=["GET"])
 def get_user_by_id_route(id_user):
     return get_user_by_id(id_user)
-
-
-# ==========================================
-# CHANGE PASSWORD
-# ==========================================
-
-
-@auth_bp.route("/profile/change-password", methods=["PUT"])
-@jwt_required()
-def change_password_route():
-    return change_password()

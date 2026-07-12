@@ -9,6 +9,8 @@ import DashboardView from "../views/DashboardView.vue";
 import PredictionView from "../views/PredictionView.vue";
 import HistoryView from "../views/HistoryView.vue";
 import ProfileView from "../views/ProfileView.vue";
+import AdminDashboardView from "../views/AdminDashboardView.vue";
+import OperatorDashboardView from "../views/OperatorDashboardView.vue";
 
 const routes = [
   {
@@ -31,6 +33,7 @@ const routes = [
     component: DashboardView,
     meta: {
       requiresAuth: true,
+      roles: ["nasabah", "instansi"],
     },
   },
 
@@ -39,6 +42,7 @@ const routes = [
     component: PredictionView,
     meta: {
       requiresAuth: true,
+      roles: ["nasabah", "instansi"],
     },
   },
 
@@ -47,6 +51,7 @@ const routes = [
     component: HistoryView,
     meta: {
       requiresAuth: true,
+      roles: ["nasabah", "instansi"],
     },
   },
 
@@ -55,6 +60,24 @@ const routes = [
     component: ProfileView,
     meta: {
       requiresAuth: true,
+      roles: ["super_admin", "operator", "instansi", "nasabah"],
+    },
+  },
+
+  {
+    path: "/admin",
+    component: AdminDashboardView,
+    meta: {
+      requiresAuth: true,
+      roles: ["super_admin"],
+    },
+  },
+  {
+    path: "/operator",
+    component: OperatorDashboardView,
+    meta: {
+      requiresAuth: true,
+      roles: ["operator"],
     },
   },
 ];
@@ -71,15 +94,56 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem("token");
 
-  // Belum login
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+
+  // ==========================================
+  // BELUM LOGIN
+  // ==========================================
+
   if (to.meta.requiresAuth && !token) {
     next("/login");
     return;
   }
 
-  // Sudah login
+  // ==========================================
+  // SUDAH LOGIN
+  // ==========================================
+
   if (token && (to.path === "/login" || to.path === "/register")) {
-    next("/dashboard");
+    switch (user?.role) {
+      case "super_admin":
+        next("/admin");
+        return;
+
+      case "operator":
+        next("/operator");
+        return;
+
+      default:
+        next("/dashboard");
+        return;
+    }
+  }
+
+  // ==========================================
+  // ROLE GUARD
+  // ==========================================
+
+  if (to.meta.roles && !to.meta.roles.includes(user?.role)) {
+    switch (user?.role) {
+      case "super_admin":
+        next("/admin");
+        break;
+
+      case "operator":
+        next("/operator");
+        break;
+
+      default:
+        next("/dashboard");
+        break;
+    }
+
     return;
   }
 

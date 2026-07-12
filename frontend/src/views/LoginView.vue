@@ -51,13 +51,6 @@
           />
         </div>
 
-        <div class="login-options">
-          <div>
-            <input type="checkbox" />
-            Ingat saya
-          </div>
-        </div>
-
         <button class="btn-login" @click="login" :disabled="loading">
           {{ loading ? "Memproses..." : "Login" }}
         </button>
@@ -105,6 +98,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";
+import Swal from "sweetalert2";
 
 import logo from "../assets/logo.jpg";
 
@@ -116,148 +110,57 @@ const password = ref("");
 const loading = ref(false);
 
 const login = async () => {
+  // ===============================
+  // VALIDASI FORM
+  // ===============================
+
   if (!login_input.value || !password.value) {
-    alert("Username / Email / Nomor Telepon dan Password wajib diisi");
+    await Swal.fire({
+      icon: "warning",
+      title: "Data Belum Lengkap",
+      text: "Username / Email / Nomor Telepon dan Password wajib diisi.",
+      confirmButtonColor: "#ffc107",
+    });
+
     return;
   }
 
   try {
     loading.value = true;
 
-    await auth.login(login_input.value, password.value);
+    const user = await auth.login(login_input.value, password.value);
 
-    router.push("/dashboard");
+    await Swal.fire({
+      icon: "success",
+      title: "Login Berhasil",
+      text: `Selamat datang, ${user.nama_lengkap}!`,
+      timer: 1500,
+      showConfirmButton: false,
+    });
+
+    switch (user.role) {
+      case "super_admin":
+        router.push("/admin");
+        break;
+
+      case "operator":
+        router.push("/operator");
+        break;
+
+      default:
+        router.push("/dashboard");
+    }
   } catch (error) {
-    alert(error.response?.data?.message || "Login gagal");
+    await Swal.fire({
+      icon: "error",
+      title: "Login Gagal",
+      text: error.response?.data?.message || "Username atau password salah.",
+      confirmButtonColor: "#dc3545",
+    });
   } finally {
     loading.value = false;
   }
 };
 </script>
 
-<style scoped>
-.login-page {
-  min-height: 100vh;
-  background: #f5f7fa;
-  padding: 20px;
-}
-
-.top-brand {
-  margin-bottom: 20px;
-}
-
-.brand-box {
-  display: inline-block;
-  background: #e9ecef;
-  padding: 10px 20px;
-  font-weight: 600;
-  border-radius: 8px;
-}
-
-.login-wrapper {
-  background: white;
-  border-radius: 12px;
-  padding: 30px;
-  display: flex;
-  gap: 40px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
-.login-left {
-  flex: 1;
-}
-
-.image-placeholder {
-  width: 100%;
-  height: 450px;
-  border: 2px solid #ccc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.image-placeholder img {
-  max-width: 100%;
-  max-height: 100%;
-}
-
-.login-right {
-  flex: 1;
-}
-
-.title {
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-
-.subtitle {
-  color: #666;
-  margin-bottom: 25px;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  margin-bottom: 6px;
-  display: block;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.login-options {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  font-size: 14px;
-}
-
-.btn-login {
-  width: 100%;
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  background: #0d6efd;
-  color: white;
-  font-weight: 600;
-}
-
-.btn-login:hover {
-  background: #0b5ed7;
-}
-
-.register-link {
-  text-align: center;
-  margin-top: 15px;
-}
-
-.footer {
-  margin-top: 40px;
-  background: #e9ecef;
-  padding: 25px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-}
-
-.footer h6 {
-  font-weight: 700;
-}
-
-.footer p {
-  margin: 4px 0;
-  font-size: 14px;
-}
-
-@media (max-width: 768px) {
-  .login-wrapper {
-    flex-direction: column;
-  }
-
-  .footer {
-    grid-template-columns: 1fr;
-  }
-}
-</style>
+<style scoped src="../css/LoginView.css"></style>

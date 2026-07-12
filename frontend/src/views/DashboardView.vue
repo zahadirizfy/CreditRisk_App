@@ -15,8 +15,22 @@
         />
       </div>
 
-      <router-link to="/prediction" class="btn btn-dark">
-        + Prediksi Baru
+      <router-link to="/profile" class="profile-link">
+        <div class="user-info">
+          <div class="avatar">
+            {{ user?.nama_lengkap?.charAt(0).toUpperCase() }}
+          </div>
+
+          <div class="text-end">
+            <strong>
+              {{ user?.nama_lengkap }}
+            </strong>
+
+            <small>
+              {{ user?.email }}
+            </small>
+          </div>
+        </div>
       </router-link>
 
       <button
@@ -26,20 +40,6 @@
       >
         <i class="bi bi-box-arrow-right"></i>
       </button>
-
-      <div class="user-info">
-        <div class="text-end">
-          <strong>
-            {{ user?.nama_lengkap }}
-          </strong>
-
-          <br />
-
-          <small>
-            {{ user?.email }}
-          </small>
-        </div>
-      </div>
     </div>
 
     <!-- BODY -->
@@ -57,8 +57,6 @@
         </router-link>
 
         <router-link to="/history" class="menu-item"> 🕒 History </router-link>
-
-        <router-link to="/profile" class="menu-item"> 👤 Profile </router-link>
       </aside>
 
       <!-- MAIN -->
@@ -213,16 +211,6 @@
 
       <aside class="right-panel">
         <div class="side-card shadow-sm">
-          <h6>Kesehatan Model</h6>
-
-          <p>Uptime : 99.9%</p>
-
-          <p>KNN : K=3</p>
-
-          <p>Status : Aktif</p>
-        </div>
-
-        <div class="side-card shadow-sm">
           <h6>Tren Prediksi Harian</h6>
 
           <div style="height: 250px">
@@ -232,10 +220,6 @@
 
         <div class="side-card shadow-sm">
           <h6>Filter</h6>
-
-          <button class="btn btn-sm btn-outline-secondary" @click="resetFilter">
-            Reset
-          </button>
 
           <div class="form-check">
             <input
@@ -276,6 +260,9 @@
 
             <label class="form-check-label"> Risiko Tinggi </label>
           </div>
+          <button class="btn btn-sm btn-outline-secondary" @click="resetFilter">
+            Reset
+          </button>
         </div>
       </aside>
     </div>
@@ -320,6 +307,7 @@ import { useAuthStore } from "../stores/auth";
 import api from "../services/api";
 
 import { watch } from "vue";
+import Swal from "sweetalert2";
 
 import { Pie, Bar, Line } from "vue-chartjs";
 
@@ -357,11 +345,11 @@ const itemsPerPage = 5;
 
 const search = ref("");
 
-const filterLayak = ref(true);
-const filterTidakLayak = ref(true);
+const filterLayak = ref(false);
+const filterTidakLayak = ref(false);
 
-const filterRendah = ref(true);
-const filterTinggi = ref(true);
+const filterRendah = ref(false);
+const filterTinggi = ref(false);
 
 const getPredictions = async () => {
   try {
@@ -376,11 +364,11 @@ const getPredictions = async () => {
 const resetFilter = () => {
   search.value = "";
 
-  filterLayak.value = true;
-  filterTidakLayak.value = true;
+  filterLayak.value = false;
+  filterTidakLayak.value = false;
 
-  filterRendah.value = true;
-  filterTinggi.value = true;
+  filterRendah.value = false;
+  filterTinggi.value = false;
 };
 
 const filteredPredictions = computed(() => {
@@ -604,144 +592,35 @@ onMounted(async () => {
   await getPredictions();
 });
 
-const logout = () => {
-  auth.logout();
+const logout = async () => {
+  const result = await Swal.fire({
+    title: "Logout",
 
-  router.push("/login");
+    text: "Apakah Anda yakin ingin keluar dari sistem?",
+
+    icon: "question",
+
+    showCancelButton: true,
+
+    confirmButtonColor: "#dc3545",
+
+    cancelButtonColor: "#6c757d",
+
+    confirmButtonText: "Ya, Logout",
+
+    cancelButtonText: "Batal",
+  });
+
+  if (!result.isConfirmed) return;
+
+  localStorage.removeItem("token");
+
+  localStorage.removeItem("user");
+
+  window.location.href = "/";
 };
 </script>
 
-<style scoped>
-.dashboard-page {
-  background: #f5f6fa;
-  min-height: 100vh;
-  padding: 20px;
-}
 
-.top-header {
-  background: white;
-  padding: 15px 20px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 20px;
-}
 
-.logo-section {
-  width: 180px;
-}
-
-.search-section {
-  flex: 1;
-}
-
-.dashboard-layout {
-  display: flex;
-  gap: 20px;
-}
-
-.sidebar {
-  width: 220px;
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-}
-
-.menu-item {
-  display: block;
-  text-decoration: none;
-  color: #333;
-  padding: 12px;
-  margin-bottom: 10px;
-  border-radius: 10px;
-}
-
-.menu-item:hover {
-  background: #eee;
-}
-
-.active {
-  background: #ececec;
-}
-
-.main-content {
-  flex: 1;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
-  margin-bottom: 15px;
-}
-
-.stat-card {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-}
-
-.chart-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-  margin-bottom: 15px;
-}
-
-.chart-card {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-}
-
-.chart-title {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
-}
-
-.chart-placeholder {
-  height: 240px;
-  border: 2px dashed #ccc;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.table-card {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-}
-
-.right-panel {
-  width: 250px;
-}
-
-.side-card {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  margin-bottom: 15px;
-}
-
-.small-chart {
-  height: 120px;
-  border: 2px dashed #ccc;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 10px;
-}
-
-.footer {
-  margin-top: 20px;
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  display: flex;
-  justify-content: space-around;
-}
-</style>
+<style scoped src="../css/DashboardView.css"></style>

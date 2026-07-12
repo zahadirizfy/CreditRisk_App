@@ -9,6 +9,10 @@ from flask_jwt_extended import JWTManager
 from routes.auth_routes import auth_bp
 from routes.prediction_routes import prediction_bp
 from routes.model_routes import model_bp
+from routes.dashboard_routes import dashboard_bp
+from routes.operator_routes import operator_bp
+from routes.customer_routes import customer_bp
+
 
 app = Flask(__name__)
 
@@ -21,55 +25,34 @@ db.init_app(app)
 jwt = JWTManager(app)
 
 # Blueprints
-app.register_blueprint(
-    auth_bp,
-    url_prefix="/api"
-)
+app.register_blueprint(auth_bp, url_prefix="/api")
 
-app.register_blueprint(
-    prediction_bp,
-    url_prefix="/api"
-)
+app.register_blueprint(prediction_bp, url_prefix="/api")
 
-app.register_blueprint(
-    model_bp,
-    url_prefix="/api"
-)
+app.register_blueprint(model_bp, url_prefix="/api")
+
 
 # Home
 @app.route("/")
 def home():
 
-    return {
-        "success": True,
-        "message": "Backend Credit Risk API Running"
-    }
+    return {"success": True, "message": "Backend Credit Risk API Running"}
 
 
-# Database Test
-@app.route("/test-db")
-def test_db():
+app.register_blueprint(
+    dashboard_bp,
+    url_prefix="/api",
+)
 
-    try:
+app.register_blueprint(
+    operator_bp,
+    url_prefix="/api",
+)
 
-        db.session.execute(
-            db.text("SELECT 1")
-        )
-
-        return {
-            "success": True,
-            "message": "Database connected"
-        }
-
-    except Exception as e:
-
-        return {
-            "success": False,
-            "message": str(e)
-        }
-
+app.register_blueprint(
+    customer_bp,
+    url_prefix="/api",
+)
 
 if __name__ == "__main__":
-    app.run(
-        debug=True
-    )
+    app.run(debug=True)

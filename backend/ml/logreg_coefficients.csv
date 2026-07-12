@@ -1,0 +1,10 @@
+Feature,Coefficient
+delinquency_total,1.2299839781536388
+revolving_utilization,0.6446676828371076
+utilization_income_ratio,-0.09744138539363525
+loan_per_age,0.10255726628349823
+age,-0.28773338834053236
+debt_ratio,-0.015033833544417839
+real_estate_loans,0.10905852225366817
+income_per_dependent,-0.11286550523515758
+monthly_income_log,-0.04251773446841706

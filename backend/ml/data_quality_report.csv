@@ -1,0 +1,12 @@
+,missing,missing_%,dtype
+target,0,0.0,int64
+revolving_utilization,3086,2.06,float64
+age,0,0.0,int64
+delinquency_30_59,0,0.0,int64
+debt_ratio,5131,3.42,float64
+monthly_income,29731,19.82,float64
+num_credit_lines,0,0.0,int64
+delinquency_90,0,0.0,int64
+real_estate_loans,0,0.0,int64
+delinquency_60_89,0,0.0,int64
+dependents,3924,2.62,float64

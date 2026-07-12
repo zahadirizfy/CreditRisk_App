@@ -1,0 +1,164 @@
+
+body {
+  background: #f5f7fb;
+}
+
+.card {
+  border: none;
+  border-radius: 18px;
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+.card-body {
+  padding: 28px;
+}
+
+h2 {
+  font-weight: 700;
+}
+
+h5 {
+  font-weight: 600;
+}
+
+.prediction-section {
+  border: 1px solid #e8ecf3;
+  border-radius: 15px;
+  padding: 20px;
+  background: #fafbfc;
+}
+
+.prediction-section h6 {
+  font-weight: 700;
+  color: #0d6efd;
+  margin-bottom: 18px;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #495057;
+}
+
+.form-control {
+  border-radius: 10px;
+  min-height: 45px;
+  border: 1px solid #dfe3e8;
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.15);
+  border-color: #0d6efd;
+}
+
+.btn {
+  border-radius: 10px;
+}
+
+.btn-primary {
+  height: 48px;
+  font-weight: 600;
+}
+
+.result-card {
+  border-radius: 15px;
+  padding: 20px;
+  background: #f8f9fa;
+}
+
+.progress {
+  height: 10px;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  transition: width 0.6s ease;
+}
+
+.badge {
+  font-size: 0.95rem;
+  border-radius: 10px;
+}
+
+.insight-box {
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.insight-box h6 {
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.insight-box ul {
+  padding-left: 18px;
+  margin-bottom: 0;
+}
+
+.insight-box li {
+  margin-bottom: 8px;
+}
+
+.success-box {
+  background: #ecfdf3;
+  border: 1px solid #b7ebc6;
+}
+
+.warning-box {
+  background: #fff8e6;
+  border: 1px solid #ffe39c;
+}
+
+.info-box {
+  background: #eef4ff;
+  border: 1px solid #bfd6ff;
+}
+
+.alert {
+  border-radius: 12px;
+}
+
+.text-success {
+  color: #198754 !important;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+
+.spinner-border {
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 992px) {
+  .prediction-section {
+    margin-bottom: 20px;
+  }
+
+  .card {
+    margin-bottom: 20px;
+  }
+
+  .card-body {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .card-body {
+    padding: 16px;
+  }
+
+  .prediction-section {
+    padding: 15px;
+  }
+}

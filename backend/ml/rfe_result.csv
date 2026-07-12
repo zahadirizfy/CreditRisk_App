@@ -1,0 +1,13 @@
+Feature,Selected,Ranking
+age,True,1
+debt_per_income,True,1
+debt_ratio,True,1
+delinquency_total,True,1
+income_per_dependent,True,1
+loan_per_age,True,1
+monthly_income_log,True,1
+real_estate_loans,True,1
+revolving_utilization,True,1
+utilization_income_ratio,True,1
+num_credit_lines,False,2
+dependents,False,3

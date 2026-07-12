@@ -2,110 +2,67 @@ import { defineStore } from "pinia";
 import api from "../services/api";
 
 export const useAuthStore = defineStore("auth", {
+  state: () => ({
+    token: localStorage.getItem("token") || null,
 
-    state: () => ({
-        token: localStorage.getItem("token") || null,
+    user: JSON.parse(localStorage.getItem("user")) || null,
+  }),
 
-        user: JSON.parse(
-            localStorage.getItem("user")
-        ) || null
-    }),
+  getters: {
+    isAuthenticated: (state) => !!state.token,
+  },
 
-    getters: {
+  actions: {
+    // ==========================================
+    // LOGIN
+    // ==========================================
 
-        isAuthenticated: (state) =>
-            !!state.token
+    async login(login_input, password) {
+      const response = await api.post("/login", {
+        login_input,
+        password,
+      });
 
+      this.token = response.data.access_token;
+
+      this.user = response.data.user;
+
+      localStorage.setItem("token", this.token);
+
+      localStorage.setItem("user", JSON.stringify(this.user));
+
+      return this.user;
     },
 
-    actions: {
+    // ==========================================
+    // LOGOUT
+    // ==========================================
 
-        // ==========================================
-        // LOGIN
-        // ==========================================
+    logout() {
+      this.token = null;
+      this.user = null;
 
-        async login(
-            login_input,
-            password
-        ) {
+      localStorage.removeItem("token");
 
-            const response = await api.post(
-                "/login",
-                {
-                    login_input,
-                    password
-                }
-            );
+      localStorage.removeItem("user");
+    },
 
-            this.token =
-                response.data.token;
+    // ==========================================
+    // LOAD USER
+    // ==========================================
 
-            this.user =
-                response.data.user;
+    loadUser() {
+      const token = localStorage.getItem("token");
 
-            localStorage.setItem(
-                "token",
-                this.token
-            );
+      const user = localStorage.getItem("user");
 
-            localStorage.setItem(
-                "user",
-                JSON.stringify(
-                    this.user
-                )
-            );
+      if (token) {
+        this.token = token;
+      }
 
-            return response;
-        },
-
-        // ==========================================
-        // LOGOUT
-        // ==========================================
-
-        logout() {
-
-            this.token = null;
-            this.user = null;
-
-            localStorage.removeItem(
-                "token"
-            );
-
-            localStorage.removeItem(
-                "user"
-            );
-
-        },
-
-        // ==========================================
-        // LOAD USER
-        // ==========================================
-
-        loadUser() {
-
-            const token =
-                localStorage.getItem(
-                    "token"
-                );
-
-            const user =
-                localStorage.getItem(
-                    "user"
-                );
-
-            if (token) {
-
-                this.token = token;
-            }
-
-            if (user) {
-
-                this.user =
-                    JSON.parse(user);
-            }
-
-        }
-
-    }
-
+      if (user) {
+        this.user = JSON.parse(user);
+      }
+    },
+  },
 });

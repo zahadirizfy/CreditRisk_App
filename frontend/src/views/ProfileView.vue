@@ -59,9 +59,9 @@
               </p>
 
               <p>
-                <strong>Institusi :</strong>
+                <strong>instansi :</strong>
                 <br />
-                {{ user.institusi || "-" }}
+                {{ user.instansi || "-" }}
               </p>
 
               <p>
@@ -136,12 +136,12 @@
               </div>
 
               <div v-if="user.role !== 'nasabah'" class="col-md-6 mb-3">
-                <label class="form-label"> Institusi </label>
+                <label class="form-label"> instansi </label>
 
                 <input
                   type="text"
                   class="form-control"
-                  v-model="profileForm.institusi"
+                  v-model="profileForm.instansi"
                   :readonly="!editMode"
                 />
               </div>
@@ -247,7 +247,7 @@ const profileForm = ref({
   username: "",
   email: "",
   nomor_telepon: "",
-  institusi: "",
+  instansi: "",
 });
 
 const showAlert = (type, message) => {
@@ -280,7 +280,7 @@ const loadProfile = async () => {
       username: user.value.username,
       email: user.value.email,
       nomor_telepon: user.value.nomor_telepon,
-      institusi: user.value.institusi,
+      instansi: user.value.instansi,
     };
   } catch (error) {
     showAlert("danger", error.response?.data?.message || "Gagal memuat profil");
@@ -301,9 +301,9 @@ const saveProfile = async () => {
       nomor_telepon: profileForm.value.nomor_telepon,
     };
 
-    // Hanya admin yang boleh mengirim institusi
+    // Hanya admin yang boleh mengirim instansi
     if (user.value.role !== "nasabah") {
-      payload.institusi = profileForm.value.institusi;
+      payload.instansi = profileForm.value.instansi;
     }
 
     const response = await api.put("/profile", payload);
@@ -332,7 +332,7 @@ const toggleEdit = () => {
       username: user.value.username,
       email: user.value.email,
       nomor_telepon: user.value.nomor_telepon,
-      institusi: user.value.institusi,
+      instansi: user.value.instansi,
     };
   }
 
@@ -408,34 +408,6 @@ const goBack = () => {
 };
 </script>
 
-<style scoped>
-.profile-card {
-  min-height: 650px;
-}
 
-.avatar-box {
-  width: 100px;
-  height: 100px;
 
-  border-radius: 50%;
-
-  background: #0d6efd;
-  color: white;
-
-  font-size: 36px;
-  font-weight: bold;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.card {
-  border: none;
-  border-radius: 15px;
-}
-
-.form-control {
-  background: #f8f9fa;
-}
-</style>
+<style scoped src="../css/ProfileView.css"></style>

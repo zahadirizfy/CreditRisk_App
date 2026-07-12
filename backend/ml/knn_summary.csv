@@ -1,0 +1,2 @@
+Accuracy,Precision,Recall,F1,ROC_AUC,Best_Params
+0.9786324786324786,0.9429446145282494,0.9734233587128286,0.9579416130628402,0.9919048694878132,"{'n_neighbors': 3, 'weights': 'distance', 'metric': 'manhattan'}"

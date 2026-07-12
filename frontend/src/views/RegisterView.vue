@@ -78,7 +78,7 @@
 
           <!-- ROLE -->
           <div class="form-group">
-            <label>Role</label>
+            <label>Daftar sebagai</label>
 
             <div class="d-flex gap-4 mt-2">
               <div class="form-check">
@@ -96,24 +96,24 @@
                 <input
                   class="form-check-input"
                   type="radio"
-                  value="admin_bank"
+                  value="instansi"
                   v-model="form.role"
                 />
 
-                <label class="form-check-label"> Bank/Koperasi </label>
+                <label class="form-check-label"> Instansi </label>
               </div>
             </div>
           </div>
 
-          <!-- INSTITUSI -->
-          <div class="form-group" v-if="form.role === 'admin_bank'">
-            <label>Institusi</label>
+          <!-- instansi -->
+          <div class="form-group" v-if="form.role === 'instansi'">
+            <label>Instansi</label>
 
             <input
-              v-model="form.institusi"
+              v-model="form.instansi"
               type="text"
               class="form-control"
-              placeholder="Nama Bank / Koperasi"
+              placeholder="Nama instansi"
             />
           </div>
 
@@ -197,6 +197,7 @@
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import api from "../services/api";
+import Swal from "sweetalert2";
 
 import logo from "../assets/logo.jpg";
 
@@ -212,13 +213,18 @@ const form = reactive({
   password: "",
   nama_lengkap: "",
   nomor_telepon: "",
-  institusi: "",
+  instansi: "",
   role: "nasabah",
 });
 
 const register = async () => {
   if (form.password !== confirmPassword.value) {
-    alert("Password dan Konfirmasi Password tidak sama");
+    Swal.fire({
+      icon: "warning",
+      title: "Password Tidak Sama",
+      text: "Pastikan password dan konfirmasi password sama.",
+      confirmButtonColor: "#ffc107",
+    });
     return;
   }
 
@@ -227,140 +233,30 @@ const register = async () => {
 
     const response = await api.post("/register", form);
 
-    alert(response.data.message);
+    await Swal.fire({
+      icon: "success",
+      title: "Registrasi Berhasil",
+      text: response.data.message,
+      confirmButtonText: "Login Sekarang",
+      confirmButtonColor: "#0d6efd",
+    });
 
     router.push("/login");
   } catch (error) {
     console.log(error);
 
-    alert(error.response?.data?.message || "Registrasi gagal");
+    Swal.fire({
+      icon: "error",
+      title: "Registrasi Gagal",
+      text: error.response?.data?.message || "Terjadi kesalahan pada server.",
+      confirmButtonColor: "#dc3545",
+    });
   } finally {
     loading.value = false;
   }
 };
 </script>
 
-<style scoped>
-.register-page {
-  min-height: 100vh;
-  background: #f5f7fa;
-  padding: 20px;
-}
 
-.top-brand {
-  margin-bottom: 20px;
-}
 
-.brand-box {
-  display: inline-block;
-  background: #e9ecef;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: 600;
-}
-
-.register-wrapper {
-  background: white;
-  border-radius: 12px;
-  padding: 30px;
-  display: flex;
-  gap: 40px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
-.register-left {
-  flex: 1;
-}
-
-.image-placeholder {
-  width: 100%;
-  height: 650px;
-  border: 2px solid #ddd;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.image-placeholder img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.register-right {
-  flex: 1;
-}
-
-.title {
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-
-.subtitle {
-  color: #666;
-  margin-bottom: 20px;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 500;
-}
-
-.btn-register {
-  width: 100%;
-  border: none;
-  border-radius: 10px;
-  background: #0d6efd;
-  color: white;
-  padding: 12px;
-  font-weight: 600;
-  margin-top: 10px;
-}
-
-.btn-register:hover {
-  background: #0b5ed7;
-}
-
-.login-link {
-  text-align: center;
-  margin-top: 15px;
-}
-
-.footer {
-  margin-top: 40px;
-  background: #e9ecef;
-  padding: 25px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-}
-
-.footer h6 {
-  font-weight: 700;
-}
-
-.footer p {
-  margin: 4px 0;
-  font-size: 14px;
-}
-
-@media (max-width: 768px) {
-  .register-wrapper {
-    flex-direction: column;
-  }
-
-  .image-placeholder {
-    height: 250px;
-  }
-
-  .footer {
-    grid-template-columns: 1fr;
-  }
-}
-</style>
+<style scoped src="../css/RegisterView.css"></style>

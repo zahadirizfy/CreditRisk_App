@@ -33,7 +33,7 @@
 
               <div class="col-md-7">
                 <div class="image-box">
-                  <!-- nanti diganti gambar -->
+                  <img :src="currentData.image" class="hero-image" />
                 </div>
               </div>
 
@@ -46,11 +46,11 @@
                   </small>
 
                   <h5 class="mt-2">
-                    {{ currentData.title }}
+                    {{ currentData.title2 }}
                   </h5>
 
                   <p>
-                    {{ currentData.description }}
+                    {{ currentData.description2 }}
                   </p>
                 </div>
 
@@ -135,33 +135,48 @@
           <h2 class="fw-bold">Data dan Machine Learning</h2>
 
           <p class="text-muted mt-3">
-            Sistem memanfaatkan data historis calon nasabah sebagai dasar
-            analisis. Data diproses menggunakan Logistic Regression dan
-            K-Nearest Neighbor (KNN) untuk menghasilkan keputusan yang lebih
-            objektif.
+            Sistem ini memanfaatkan data historis dan informasi keuangan calon
+            nasabah sebagai dasar dalam proses analisis risiko kredit. Data yang
+            dimasukkan akan melalui tahap preprocessing untuk meningkatkan
+            kualitas data sebelum diproses oleh model Machine Learning. Model
+            Logistic Regression digunakan untuk memprediksi kelayakan pemberian
+            kredit berdasarkan karakteristik nasabah, sedangkan metode K-Nearest
+            Neighbor (KNN) digunakan untuk mengelompokkan tingkat risiko kredit
+            berdasarkan kemiripan pola dengan data historis. Kombinasi kedua
+            metode tersebut menghasilkan proses analisis yang lebih objektif,
+            cepat, dan konsisten sehingga dapat membantu lembaga keuangan dalam
+            mendukung pengambilan keputusan kredit.
           </p>
 
           <div class="row mt-4">
             <div class="col-md-6">
+              <h5>Data Nasabah</h5>
               <ul>
                 <li>Identitas Nasabah</li>
                 <li>Data Keuangan</li>
                 <li>Riwayat Kredit</li>
+                <li>Rasio Hutang</li>
+                <li>Jumlah Tanggungan</li>
               </ul>
             </div>
 
             <div class="col-md-6">
+              <h5>Proses Machine Learning</h5>
               <ul>
-                <li>Preprocessing</li>
+                <li>Data Preprocessing</li>
+                <li>Feature Engineering</li>
                 <li>Logistic Regression</li>
                 <li>K-Nearest Neighbor</li>
+                <li>Hasil Prediksi</li>
               </ul>
             </div>
           </div>
         </div>
 
         <div class="col-lg-5">
-          <div class="image-box"></div>
+          <div class="image-box">
+            <img :src="mlImage" alt="Machine Learning" class="content-image" />
+          </div>
         </div>
       </div>
     </section>
@@ -181,9 +196,9 @@
           <div class="row mt-4">
             <div class="col-md-4">
               <div class="result-card">
-                <small>Skor</small>
+                <small>Probabilitas</small>
 
-                <h2>720</h2>
+                <h2><0.7</h2>
               </div>
             </div>
 
@@ -206,7 +221,13 @@
         </div>
 
         <div class="col-lg-5">
-          <div class="image-box"></div>
+          <div class="image-box">
+            <img
+              :src="resultImage"
+              alt="Machine Learning"
+              class="content-image"
+            />
+          </div>
         </div>
       </div>
     </section>
@@ -249,6 +270,11 @@
 <script setup>
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
+import step1 from "@/assets/step1.png";
+import step2 from "@/assets/step2.png";
+import step3 from "@/assets/step3.png";
+import mlImage from "@/assets/mlimage.png";
+import resultImage from "@/assets/resultimage.png";
 
 const router = useRouter();
 
@@ -263,8 +289,14 @@ const currentStep = ref(1);
 const steps = [
   {
     title: "Input Data Nasabah",
+    title2: "Mulai dari Data yang Akurat",
+
+    image: step1,
+
     description:
       "Masukkan identitas dan informasi keuangan calon nasabah sebagai dasar analisis risiko kredit.",
+    description2:
+      "Kualitas hasil prediksi sangat bergantung pada data yang dimasukkan. Pastikan seluruh informasi nasabah diisi dengan benar dan lengkap agar sistem dapat menghasilkan analisis risiko yang lebih akurat.",
 
     points: [
       "Nama, Nomor KTP, dan Pekerjaan",
@@ -275,8 +307,12 @@ const steps = [
 
   {
     title: "Analisis Machine Learning",
+    title2: "Analisis Dilakukan Secara Otomatis",
+    image: step2,
     description:
       "Data akan diproses menggunakan Logistic Regression untuk menentukan kelayakan kredit, kemudian K-Nearest Neighbor digunakan untuk menentukan tingkat risiko kredit.",
+    description2:
+      "Setelah data dikirim, sistem akan melakukan preprocessing kemudian menganalisis data menggunakan Logistic Regression dan K-Nearest Neighbor (KNN). Seluruh proses berlangsung secara otomatis hanya dalam beberapa detik.",
 
     points: [
       "Preprocessing Data",
@@ -287,8 +323,12 @@ const steps = [
 
   {
     title: "Hasil Prediksi",
+    title2: "Informasi Siap Digunakan",
+    image: step3,
     description:
       "Sistem menghasilkan status kelayakan kredit, probabilitas prediksi, tingkat risiko, dan rekomendasi plafon kredit sebagai pendukung keputusan.",
+    description2:
+      "Hasil prediksi menampilkan status kelayakan kredit, tingkat risiko, probabilitas, serta rekomendasi plafon kredit yang dapat digunakan sebagai bahan pertimbangan dalam proses pengambilan keputusan.",
 
     points: [
       "Status Kelayakan Kredit",
@@ -329,295 +369,4 @@ const goLogin = () => {
 };
 </script>
 
-<style scoped>
-/* =======================================================
-   GLOBAL
-======================================================= */
-
-.landing-page {
-  background: #f4f6f9;
-  min-height: 100vh;
-}
-
-/* =======================================================
-   NAVBAR
-======================================================= */
-
-.navbar {
-  height: 75px;
-}
-
-.navbar-brand {
-  font-size: 24px;
-  letter-spacing: 0.5px;
-}
-
-/* =======================================================
-   HERO
-======================================================= */
-
-.hero-section {
-  padding: 50px 70px;
-
-  min-height: calc(100vh - 75px);
-
-  display: flex;
-
-  align-items: center;
-}
-
-.hero-card {
-  background: #ececec;
-
-  border-radius: 20px;
-
-  padding: 40px;
-}
-
-.hero-card h1 {
-  font-size: 60px;
-}
-
-.hero-card p {
-  font-size: 18px;
-
-  line-height: 1.8;
-}
-
-/* =======================================================
-   IMAGE
-======================================================= */
-
-.image-box {
-  background: white;
-
-  border-radius: 20px;
-
-  height: 430px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  overflow: hidden;
-
-  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
-}
-
-.image-box img {
-  width: 100%;
-
-  height: 100%;
-
-  object-fit: cover;
-}
-
-/* =======================================================
-   MINI CARD
-======================================================= */
-
-.mini-card {
-  background: white;
-
-  border-radius: 15px;
-
-  padding: 22px;
-
-  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
-
-  transition: 0.3s;
-}
-
-.mini-card:hover {
-  transform: translateY(-5px);
-}
-
-.mini-card h5 {
-  font-weight: 700;
-}
-
-.mini-card p {
-  font-size: 15px;
-
-  line-height: 1.6;
-}
-
-/* =======================================================
-   ONBOARDING
-======================================================= */
-
-.onboarding-card {
-  background: #ececec;
-
-  border-radius: 20px;
-
-  padding: 35px;
-
-  height: 100%;
-}
-
-.onboarding-card h2 {
-  font-weight: 700;
-}
-
-.onboarding-card p {
-  line-height: 1.8;
-}
-
-.onboarding-card ul {
-  padding-left: 18px;
-}
-
-.onboarding-card li {
-  margin-bottom: 12px;
-}
-
-/* =======================================================
-   BUTTON STEP
-======================================================= */
-
-.step-btn {
-  width: 42px;
-
-  height: 42px;
-
-  border-radius: 50%;
-
-  border: none;
-
-  background: #d5d5d5;
-
-  margin: 5px;
-
-  transition: 0.3s;
-
-  font-weight: bold;
-}
-
-.step-btn:hover {
-  transform: scale(1.08);
-}
-
-.step-btn.active {
-  background: #0d6efd;
-
-  color: white;
-}
-
-/* =======================================================
-   CONTENT
-======================================================= */
-
-.content-section {
-  padding: 80px 70px;
-}
-
-.content-section h2 {
-  font-size: 40px;
-}
-
-.content-section p {
-  font-size: 17px;
-
-  line-height: 1.9;
-}
-
-.content-section ul {
-  line-height: 2;
-}
-
-/* =======================================================
-   RESULT CARD
-======================================================= */
-
-.result-card {
-  background: white;
-
-  border-radius: 18px;
-
-  padding: 25px;
-
-  text-align: center;
-
-  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
-
-  transition: 0.3s;
-}
-
-.result-card:hover {
-  transform: translateY(-6px);
-}
-
-.result-card small {
-  color: #666;
-}
-
-.result-card h2 {
-  margin-top: 10px;
-
-  font-weight: bold;
-
-  color: #0d6efd;
-}
-
-/* =======================================================
-   FOOTER
-======================================================= */
-
-.footer {
-  margin-top: 70px;
-
-  background: #1d1d1d;
-
-  color: white;
-
-  padding: 60px 70px;
-}
-
-.footer h5,
-.footer h6 {
-  margin-bottom: 20px;
-}
-
-.footer ul {
-  list-style: none;
-
-  padding: 0;
-}
-
-.footer li {
-  margin-bottom: 10px;
-}
-
-.footer p {
-  color: #d8d8d8;
-}
-
-/* =======================================================
-   RESPONSIVE
-======================================================= */
-
-@media (max-width: 992px) {
-  .hero-section {
-    padding: 30px;
-  }
-
-  .content-section {
-    padding: 30px;
-  }
-
-  .hero-card {
-    margin-bottom: 30px;
-  }
-
-  .hero-card h1 {
-    font-size: 42px;
-  }
-
-  .image-box {
-    height: 280px;
-  }
-}
-</style>
+<style scoped src="../css/LandingView.css"></style>

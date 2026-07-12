@@ -1,0 +1,291 @@
+
+/* =======================================================
+   GLOBAL
+======================================================= */
+
+.landing-page {
+  background: #f4f6f9;
+  min-height: 100vh;
+}
+
+/* =======================================================
+   NAVBAR
+======================================================= */
+
+.navbar {
+  height: 75px;
+}
+
+.navbar-brand {
+  font-size: 24px;
+  letter-spacing: 0.5px;
+}
+
+/* =======================================================
+   HERO
+======================================================= */
+
+.hero-section {
+  padding: 50px 70px;
+
+  min-height: calc(100vh - 75px);
+
+  display: flex;
+
+  align-items: center;
+}
+
+.hero-card {
+  background: #ececec;
+
+  border-radius: 20px;
+
+  padding: 40px;
+}
+
+.hero-card h1 {
+  font-size: 60px;
+}
+
+.hero-card p {
+  font-size: 18px;
+
+  line-height: 1.8;
+}
+
+/* =======================================================
+   IMAGE
+======================================================= */
+
+.image-box {
+  background: white;
+
+  border-radius: 20px;
+
+  height: 430px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  overflow: hidden;
+
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
+}
+
+.image-box img {
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: cover;
+}
+
+/* =======================================================
+   MINI CARD
+======================================================= */
+
+.mini-card {
+  background: white;
+
+  border-radius: 15px;
+
+  padding: 22px;
+
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
+
+  transition: 0.3s;
+}
+
+.mini-card:hover {
+  transform: translateY(-5px);
+}
+
+.mini-card h5 {
+  font-weight: 700;
+}
+
+.mini-card p {
+  font-size: 15px;
+
+  line-height: 1.6;
+}
+
+/* =======================================================
+   ONBOARDING
+======================================================= */
+
+.onboarding-card {
+  background: #ececec;
+
+  border-radius: 20px;
+
+  padding: 35px;
+
+  height: 100%;
+}
+
+.onboarding-card h2 {
+  font-weight: 700;
+}
+
+.onboarding-card p {
+  line-height: 1.8;
+}
+
+.onboarding-card ul {
+  padding-left: 18px;
+}
+
+.onboarding-card li {
+  margin-bottom: 12px;
+}
+
+/* =======================================================
+   BUTTON STEP
+======================================================= */
+
+.step-btn {
+  width: 42px;
+
+  height: 42px;
+
+  border-radius: 50%;
+
+  border: none;
+
+  background: #d5d5d5;
+
+  margin: 5px;
+
+  transition: 0.3s;
+
+  font-weight: bold;
+}
+
+.step-btn:hover {
+  transform: scale(1.08);
+}
+
+.step-btn.active {
+  background: #0d6efd;
+
+  color: white;
+}
+
+/* =======================================================
+   CONTENT
+======================================================= */
+
+.content-section {
+  padding: 80px 70px;
+}
+
+.content-section h2 {
+  font-size: 40px;
+}
+
+.content-section p {
+  font-size: 17px;
+
+  line-height: 1.9;
+}
+
+.content-section ul {
+  line-height: 2;
+}
+
+/* =======================================================
+   RESULT CARD
+======================================================= */
+
+.result-card {
+  background: white;
+
+  border-radius: 18px;
+
+  padding: 25px;
+
+  text-align: center;
+
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
+
+  transition: 0.3s;
+}
+
+.result-card:hover {
+  transform: translateY(-6px);
+}
+
+.result-card small {
+  color: #666;
+}
+
+.result-card h2 {
+  margin-top: 10px;
+
+  font-weight: bold;
+
+  color: #0d6efd;
+}
+
+/* =======================================================
+   FOOTER
+======================================================= */
+
+.footer {
+  margin-top: 70px;
+
+  background: #1d1d1d;
+
+  color: white;
+
+  padding: 60px 70px;
+}
+
+.footer h5,
+.footer h6 {
+  margin-bottom: 20px;
+}
+
+.footer ul {
+  list-style: none;
+
+  padding: 0;
+}
+
+.footer li {
+  margin-bottom: 10px;
+}
+
+.footer p {
+  color: #d8d8d8;
+}
+
+/* =======================================================
+   RESPONSIVE
+======================================================= */
+
+@media (max-width: 992px) {
+  .hero-section {
+    padding: 30px;
+  }
+
+  .content-section {
+    padding: 30px;
+  }
+
+  .hero-card {
+    margin-bottom: 30px;
+  }
+
+  .hero-card h1 {
+    font-size: 42px;
+  }
+
+  .image-box {
+    height: 280px;
+  }
+}
