@@ -1,12 +1,15 @@
 import smtplib
 from email.mime.text import MIMEText
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 def send_reset_email(to_email, otp_code):
-   
-    SENDER_EMAIL = "zrizfy@gmail.com"
-    
-    SENDER_PASSWORD = "lrjpujzjtoqojiyb" 
+
+    SENDER_EMAIL = os.getenv("SENDER_EMAIL")
+    SENDER_PASSWORD = os.getenv("SENDER_PASSWORD")
 
     pesan = f"""
     Halo,
@@ -21,13 +24,13 @@ def send_reset_email(to_email, otp_code):
     """
 
     msg = MIMEText(pesan)
-    msg['Subject'] = "Kode Reset Password"
-    msg['From'] = SENDER_EMAIL
-    msg['To'] = to_email
+    msg["Subject"] = "Kode Reset Password"
+    msg["From"] = SENDER_EMAIL
+    msg["To"] = to_email
 
     try:
         # Menghubungkan ke server SMTP Gmail
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(SENDER_EMAIL, SENDER_PASSWORD)
             server.send_message(msg)
         return True
