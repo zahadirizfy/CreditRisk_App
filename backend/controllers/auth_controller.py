@@ -1,12 +1,14 @@
+import random
 from flask import request, jsonify
 from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from database.db import db
 from models.user import User
 from sqlalchemy import or_
 from decorators.role_required import role_required
+from utils.email_sender import send_reset_email
 
 
 # ==========================================
@@ -36,6 +38,11 @@ def register():
 
         if not password:
             return jsonify({"success": False, "message": "Password wajib diisi"}), 400
+
+        if not nomor_telepon:
+            return jsonify(
+                {"success": False, "message": "Nomor telepon wajib diisi"}
+            ), 400
 
         allowed_roles = ["nasabah", "instansi"]
 
@@ -96,6 +103,7 @@ def register():
                     "id_user": new_user.id_user,
                     "username": new_user.username,
                     "email": new_user.email,
+                    "nomor_telepon": new_user.nomor_telepon,
                     "role": new_user.role,
                 },
             }
@@ -189,6 +197,111 @@ def login():
         return jsonify(
             {"success": False, "message": "Terjadi kesalahan pada server"}
         ), 500
+
+
+# ==========================================
+# 1. MINTA KODE RESET (LUPA PASSWORD)
+# ==========================================
+def forgot_password():
+    try:
+        data = request.get_json()
+        email = data.get("email")
+
+        if not email:
+            return jsonify({"success": False, "message": "Email wajib diisi"}), 400
+
+        user = User.query.filter_by(email=email).first()
+
+        if not user:
+            # Tetap berikan respon 404 agar user tahu emailnya tidak terdaftar
+            return jsonify(
+                {"success": False, "message": "Email tidak terdaftar di sistem kami."}
+            ), 404
+
+        # Generate 6 digit OTP acak
+        otp_code = str(random.randint(100000, 999999))
+
+        # Simpan OTP dan waktu kadaluarsa (15 menit dari sekarang) ke database
+        user.reset_code = otp_code
+        user.reset_code_expired_at = datetime.utcnow() + timedelta(minutes=15)
+        db.session.commit()
+
+        # Kirim email
+        email_sent = send_reset_email(user.email, otp_code)
+
+        if email_sent:
+            return jsonify(
+                {"success": True, "message": "Kode OTP telah dikirim ke email Anda."}
+            ), 200
+        else:
+            return jsonify(
+                {"success": False, "message": "Gagal mengirim email. Coba lagi nanti."}
+            ), 500
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+# ==========================================
+# 2. VERIFIKASI KODE & RESET PASSWORD
+# ==========================================
+def reset_password():
+    try:
+        data = request.get_json()
+        email = data.get("email")
+        otp_code = data.get("otp_code")
+        new_password = data.get("new_password")
+
+        if not email or not otp_code or not new_password:
+            return jsonify(
+                {
+                    "success": False,
+                    "message": "Email, kode OTP, dan password baru wajib diisi",
+                }
+            ), 400
+
+        user = User.query.filter_by(email=email).first()
+
+        # Validasi eksistensi user dan kecocokan OTP
+        if not user or user.reset_code != otp_code:
+            return jsonify(
+                {"success": False, "message": "Kode OTP salah atau tidak valid."}
+            ), 400
+
+        # Validasi waktu kadaluarsa OTP
+        if (
+            not user.reset_code_expired_at
+            or user.reset_code_expired_at < datetime.utcnow()
+        ):
+            return jsonify(
+                {
+                    "success": False,
+                    "message": "Kode OTP sudah kadaluarsa. Silakan minta kode baru.",
+                }
+            ), 400
+
+        # Jika lolos semua validasi, Hash password baru
+        hashed_password = generate_password_hash(new_password).decode("utf-8")
+        user.password = hashed_password
+
+        # Bersihkan kolom OTP agar tidak bisa dipakai ulang
+        user.reset_code = None
+        user.reset_code_expired_at = None
+        user.updated_at = datetime.utcnow()
+
+        db.session.commit()
+
+        return jsonify(
+            {
+                "success": True,
+                "message": "Password berhasil direset. Silakan login dengan password baru.",
+            }
+        ), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "message": str(e)}), 500
 
 
 # ==========================================

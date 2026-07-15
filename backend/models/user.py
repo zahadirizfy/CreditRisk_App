@@ -3,73 +3,38 @@ from datetime import datetime
 
 
 class User(db.Model):
-
     __tablename__ = "users"
-    
-    predictions = db.relationship(
-    "Prediction",
-    backref="user",
-    lazy=True
-    )
 
-    id_user = db.Column(
-        db.Integer,
-        primary_key=True
-    )
+    predictions = db.relationship("Prediction", backref="user", lazy=True)
 
-    username = db.Column(
-        db.String(20),
-        unique=True,
-        nullable=False
-    )
+    id_user = db.Column(db.Integer, primary_key=True)
 
-    password = db.Column(
-        db.String(255),
-        nullable=False
-    )
+    username = db.Column(db.String(20), unique=True, nullable=False)
 
-    nama_lengkap = db.Column(
-        db.String(30)
-    )
+    password = db.Column(db.String(255), nullable=False)
 
-    email = db.Column(
-        db.String(100),
-        unique=True
-    )
+    nama_lengkap = db.Column(db.String(30))
 
-    nomor_telepon = db.Column(
-        db.String(15)
-    )
+    email = db.Column(db.String(100), unique=True)
 
-    role = db.Column(
-        db.String(20),
-        nullable=False
-    )
+    nomor_telepon = db.Column(db.String(15), unique=True)
 
-    instansi = db.Column(
-        db.String(40)
-    )
+    role = db.Column(db.String(20), nullable=False)
 
-    status_aktif = db.Column(
-        db.Boolean,
-        default=True
-    )
+    instansi = db.Column(db.String(40))
 
-    terakhir_login = db.Column(
-        db.DateTime
-    )
+    status_aktif = db.Column(db.Boolean, default=True)
 
-    created_at = db.Column(
-    db.DateTime,
-    default=datetime.utcnow
-    )
+    terakhir_login = db.Column(db.DateTime)
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     updated_at = db.Column(
-        db.DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow
-        
+        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
     )
+
+    reset_code = db.Column(db.String(6), nullable=True)
+    reset_code_expired_at = db.Column(db.DateTime, nullable=True)
 
     def to_dict(self):
         return {
@@ -83,5 +48,7 @@ class User(db.Model):
             "status_aktif": self.status_aktif,
             "terakhir_login": self.terakhir_login,
             "created_at": self.created_at,
-            "updated_at": self.updated_at
+            "updated_at": self.updated_at,
+            "reset_code": self.reset_code,
+            "reset_code_expired_at": self.reset_code_expired_at,
         }

@@ -8,6 +8,8 @@ from controllers.auth_controller import (
     change_password,
     get_users,
     get_user_by_id,
+    forgot_password,
+    reset_password,
 )
 
 auth_bp = Blueprint("auth", __name__)
@@ -56,3 +58,16 @@ def get_users_route():
 @auth_bp.route("/users/<int:id_user>", methods=["GET"])
 def get_user_by_id_route(id_user):
     return get_user_by_id(id_user)
+
+
+# ==========================================
+# Reset Password
+# ==========================================
+@auth_bp.route("/forgot-password", methods=["POST"])
+def forgot_password_route():
+    return forgot_password()
+
+
+@auth_bp.route("/reset-password", methods=["POST"])
+def reset_password_route():
+    return reset_password()
